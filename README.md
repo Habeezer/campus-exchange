@@ -1,2 +1,2 @@
-# project-1
+# campus-exchange
 student marketplace for academic resources
