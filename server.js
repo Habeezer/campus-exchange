@@ -1,3 +1,5 @@
+const bcrypt = require('bcrypt');
+const session = require('express-session');
 const express = require('express');
 const path = require('path');
 const multer = require('multer');
@@ -10,6 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(session({
+  secret: 'my-super-secret-key', // In a real app, put this in a .env file
+  resave: false,
+  saveUninitialized: false
+}));
 
 // Ensure uploads directory exists
 if (!fs.existsSync('uploads')) fs.mkdirSync('uploads');
@@ -71,6 +78,63 @@ app.post('/api/listings', upload.single('image'), (req, res) => {
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.static(path.join(__dirname, 'public')));
+// --- AUTHENTICATION ROUTES ---
+
+// 1. Register a new user
+app.post('/api/register', async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (!password || password.length < 8) {
+      return res.status(400).json({ error: "Password must be at least 8 characters long." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const insert = db.prepare('INSERT INTO users (name, email, password) VALUES (?, ?, ?)');
+    insert.run(name, email, hashedPassword);
+
+    res.status(201).json({ message: "User registered successfully" });
+  } catch (error) {
+    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+      res.status(400).json({ error: "Email already exists" });
+    } else {
+      res.status(500).json({ error: "Registration failed" });
+    }
+  }
+}); // <-- MAKE SURE THIS IS HERE!
+
+// 2. Login
+app.post('/api/login', async (req, res) => {
+  const { email, password } = req.body;
+
+  // Find user by email
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+
+  if (!user) {
+    return res.status(401).json({ error: "Invalid email or password" });
+  }
+
+  // Compare the typed password with the hashed password in the database
+  const validPassword = await bcrypt.compare(password, user.password);
+  if (!validPassword) {
+    return res.status(401).json({ error: "Invalid email or password" });
+  }
+
+  // Save the user ID in the session (this logs them in!)
+  req.session.userId = user.id;
+  req.session.userName = user.name;
+  
+  res.json({ message: "Logged in successfully", name: user.name });
+});
+
+// 3. Check if user is logged in
+app.get('/api/me', (req, res) => {
+  if (req.session.userId) {
+    res.json({ loggedIn: true, name: req.session.userName });
+  } else {
+    res.json({ loggedIn: false });
+  }
+});
 
 app.listen(PORT, () => {
   console.log(`Campus Exchange running at http://localhost:${PORT}`);

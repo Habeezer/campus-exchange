@@ -253,3 +253,29 @@ body {
 }
 
 .submit-btn:hover { background: #1d4ed8; }
+/* Password Input Container */
+.password-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-container input {
+  width: 100%;
+  /* Add extra padding on the right so the text doesn't type over the eye icon */
+  padding-right: 40px; 
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  cursor: pointer;
+  font-size: 1.2rem;
+  user-select: none; /* Prevents highlighting the icon */
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+
+.toggle-password:hover {
+  opacity: 1;
+}

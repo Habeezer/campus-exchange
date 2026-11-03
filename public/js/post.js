@@ -31,7 +31,9 @@ form.addEventListener("submit", async function(event) {
       alert("Listing published successfully!");
       window.location.href = "/marketplace.html";
     } else {
-      alert("Something went wrong.");
+      const data = await response.json();
+      alert(data.error); // This will say "You must be logged in to post."
+      if (res.status === 401) window.location.href = "/login.html";
     }
   } catch (error) {
     console.error("Error:", error);
