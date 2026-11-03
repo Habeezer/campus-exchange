@@ -1,0 +1,14 @@
+{
+  "name": "campus-exchange",
+  "version": "0.1.0",
+  "description": "Student marketplace for academic resources",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
+}
