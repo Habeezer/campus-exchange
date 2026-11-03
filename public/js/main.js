@@ -22,48 +22,7 @@ function isFuzzyMatch(searchTerm, title) {
   return (matches / searchTerm.length) >= 0.7;
 }
 
-const listingsData = [
-  {
-    id: 1,
-    title: "Calculus Early Transcendentals",
-    price: "₹450",
-    condition: "Good",
-    category: "Book",
-    image: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&q=80"
-  },
-  {
-    id: 2,
-    title: "Casio FX-991EX Calculator",
-    price: "₹800",
-    condition: "Like New",
-    category: "Calculator",
-    image: "https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?w=400&q=80"
-  },
-  {
-    id: 3,
-    title: "Lab Coat & Goggles Set",
-    price: "Free",
-    condition: "Fair",
-    category: "Lab",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=400&q=80"
-  },
-  {
-    id: 4,
-    title: "CSE 1st Year Handwritten Notes",
-    price: "₹150",
-    condition: "Good",
-    category: "Notes",
-    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&q=80"
-  },
-    {
-    id: 5,
-    title: "Engineering Drawing Book",
-    price: "₹300",
-    condition: "Good",
-    category: "Lab",
-    image: "https://images.unsplash.com/photo-1503694978374-8a2fa686963a?w=400&q=80"
-  }
-];
+let listingsData = []; // This will hold the data from the server
 
 // 1. Find the container
 const container = document.getElementById("listings-container");
@@ -152,4 +111,22 @@ filterButtons.forEach(function(button) {
 });
 
 // 3. Call the function immediately so the page isn't empty on load
-applyFilters();
+// Fetch data from our backend API
+async function loadListings() {
+  try {
+    // 1. Ask the server for the data
+    const response = await fetch('/api/listings');
+    
+    // 2. Convert the response to JavaScript objects
+    listingsData = await response.json();
+    
+    // 3. Now that we have the data, render it!
+    applyFilters();
+    
+  } catch (error) {
+    console.error("Error loading listings:", error);
+  }
+}
+
+// Start the app
+loadListings();
