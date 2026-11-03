@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Post a Resource - Campus Exchange</title>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <a href="/" class="logo">Campus Exchange</a>
+    <nav>
+      <a href="/marketplace.html">Marketplace</a>
+      <a href="/post.html">Post a Resource</a>
+    </nav>
+  </header>
+
+  <main class="marketplace-container" style="max-width: 600px;">
+    <div class="marketplace-header">
+      <h1>Post a Resource</h1>
+      <p>List a book, calculator, or notes for other students.</p>
+    </div>
+
+    <!-- The Form -->
+    <form id="post-form" class="post-form">
+      
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input type="text" id="title" required placeholder="e.g., Casio FX-991EX Calculator">
+      </div>
+
+      <div class="form-group">
+        <label for="price">Price (₹)</label>
+        <input type="text" id="price" required placeholder="e.g., 500 (or type 'Free')">
+      </div>
+
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category" required>
+          <option value="Book">Book</option>
+          <option value="Calculator">Calculator</option>
+          <option value="Lab">Lab</option>
+          <option value="Notes">Notes</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="condition">Condition</label>
+        <select id="condition" required>
+          <option value="Like New">Like New</option>
+          <option value="Good">Good</option>
+          <option value="Fair">Fair</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="image">Upload Image</label>
+        <!-- accept="image/*" allows only images. capture="environment" opens the camera on mobile -->
+        <input type="file" id="image" accept="image/*" capture="environment">
+      </div>
+
+      <button type="submit" class="submit-btn">Publish Listing</button>
+    </form>
+
+  </main>
+
+  <script src="/js/post.js"></script>
+</body>
+</html>
