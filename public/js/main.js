@@ -96,27 +96,60 @@ function renderListings(dataToRender) {
 // 3. Call the function immediately so the page isn't empty on load
 renderListings(listingsData);
 
-// 1. Find the search bar
-const searchInput = document.getElementById("search-input");
+// --- STATE VARIABLES ---
+// We use these to remember what the user has selected
+let currentSearchTerm = "";
+let currentCategory = "All";
 
-// 2. Listen for the user typing
-searchInput.addEventListener("input", function(event) {
-  
-  // Get what the user typed, make it lowercase, and remove extra spaces
-  const searchTerm = event.target.value.toLowerCase().trim();
-
-  // 1. Filter using our new Fuzzy Search function
+// --- THE MASTER FILTER FUNCTION ---
+function applyFilters() {
+  // 1. Filter by BOTH Search and Category
   const filteredListings = listingsData.filter(function(item) {
-    // If the search bar is empty, show everything
-    if (searchTerm === "") return true; 
+    // Check 1: Does it match the search text?
+    const matchesSearch = currentSearchTerm === "" || isFuzzyMatch(currentSearchTerm, item.title);
     
-    // Otherwise, check if the title is a fuzzy match
-    return isFuzzyMatch(searchTerm, item.title);
+    // Check 2: Does it match the category button?
+    const matchesCategory = currentCategory === "All" || item.category === currentCategory;
+
+    // Only keep the item if BOTH checks are true
+    return matchesSearch && matchesCategory;
   });
 
-  // 2. Sort the filtered results alphabetically by title
+  // 2. Sort alphabetically
   filteredListings.sort((a, b) => a.title.localeCompare(b.title));
 
-  // 3. Render them!
+  // 3. Render
   renderListings(filteredListings);
+}
+
+// --- EVENT LISTENERS ---
+
+// 1. Find the search bar and listen for typing
+const searchInput = document.getElementById("search-input");
+searchInput.addEventListener("input", function(event) {
+  currentSearchTerm = event.target.value.toLowerCase().trim();
+  applyFilters(); // Call the master function
 });
+
+// 2. Find the buttons and listen for clicks
+const filterButtons = document.querySelectorAll(".filter-btn");
+
+filterButtons.forEach(function(button) {
+  button.addEventListener("click", function(event) {
+    
+    // Remove 'active' class from ALL buttons
+    filterButtons.forEach(btn => btn.classList.remove("active"));
+    
+    // Add 'active' class to the button we just clicked
+    event.target.classList.add("active");
+
+    // Update our state variable (reads the data-category attribute)
+    currentCategory = event.target.getAttribute("data-category");
+
+    // Call the master function!
+    applyFilters();
+  });
+});
+
+// 3. Call the function immediately so the page isn't empty on load
+applyFilters();
